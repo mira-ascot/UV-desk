@@ -164,7 +164,7 @@ class Thread extends AbstractController
                         'ticket_id' => $ticket->getId(),
                         'message' => $thread->getMessage(),
                         'agent_email' => $agentEmail,
-                        'from' => $this->getUser().getEmail()
+                        'from' => $user.getEmail()
                     ],
                 ]);
 
