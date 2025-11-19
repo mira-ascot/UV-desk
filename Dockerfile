@@ -72,6 +72,7 @@ RUN wget -O /usr/local/bin/composer.php "https://getcomposer.org/installer" && \
 WORKDIR /var/www/uvdesk
 
 # Install Composer dependencies
+RUN touch /var/www/uvdesk/.env
 RUN cd /var/www/uvdesk/ && composer install
 
 # Set correct permissions for UVDesk files
