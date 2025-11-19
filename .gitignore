@@ -1,0 +1,4 @@
+# ---- Environment Variables ----
+# Never commit secrets to GitHub
+.env
+.env.*
