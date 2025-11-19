@@ -71,9 +71,12 @@ RUN wget -O /usr/local/bin/composer.php "https://getcomposer.org/installer" && \
 # Set working directory
 WORKDIR /var/www/uvdesk
 
+# Prepare .env for Symfony: use .env.example if it exists, otherwise create empty
+RUN cd /var/www/uvdesk && \
+    if [ -f .env.example ]; then cp .env.example .env; else touch .env; fi
+
 # Install Composer dependencies
-RUN touch /var/www/uvdesk/.env
-RUN cd /var/www/uvdesk/ && composer install
+RUN cd /var/www/uvdesk && composer install
 
 # Set correct permissions for UVDesk files
 RUN chown -R uvdesk:uvdesk /var/www/uvdesk && \
