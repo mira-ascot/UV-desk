@@ -8,7 +8,10 @@ RUN apt-get update && apt-get install -y \
   && docker-php-ext-install intl zip pdo pdo_mysql gd xml \
   && docker-php-ext-enable mailparse \
   && a2enmod rewrite \
+  # Make Apache listen on 8080 instead of 80
+  && sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf \
   && rm -rf /var/lib/apt/lists/*
+
 
 
 # Set working directory
@@ -36,6 +39,6 @@ RUN chown -R www-data:www-data var public || true
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["docker-entrypoint.sh"]
