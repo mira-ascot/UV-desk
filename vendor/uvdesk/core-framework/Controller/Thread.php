@@ -29,9 +29,8 @@ class Thread extends AbstractController
     private $emailService;
     private $kernel;
     private $fileUploadService;
-    private $logger;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, TicketService $ticketService, EmailService $emailService, EventDispatcherInterface $eventDispatcher, KernelInterface $kernel, FileUploadService $fileUploadService,LoggerInterface $logger)
+    public function __construct(UserService $userService, TranslatorInterface $translator, TicketService $ticketService, EmailService $emailService, EventDispatcherInterface $eventDispatcher, KernelInterface $kernel, FileUploadService $fileUploadService)
     {
         $this->kernel = $kernel;
         $this->userService = $userService;
@@ -40,7 +39,6 @@ class Thread extends AbstractController
         $this->ticketService = $ticketService;
         $this->eventDispatcher = $eventDispatcher;
         $this->fileUploadService = $fileUploadService;
-        $this->logger = $logger;
     }
 
     public function saveThread($ticketId, Request $request)
@@ -154,24 +152,6 @@ class Thread extends AbstractController
                     $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
                     $this->eventDispatcher->dispatch($event, 'uvdesk.automation.report_app.workflow.execute');
                 }
-                try {
-                $agent = $this->get('security.token_storage')->getToken()?->getUser();
-                $agentEmail = $agent ? $agent->getEmail() : 'unknown';
-
-                $httpClient = \Symfony\Component\HttpClient\HttpClient::create();
-                $response = $httpClient->request('POST', 'https://uvserver-1.onrender.com/reply', [
-                    'json' => [
-                        'ticket_id' => $ticket->getId(),
-                        'message' => $thread->getMessage(),
-                        'agent_email' => $agentEmail,
-                        'from' => $user.getEmail()
-                    ],
-                ]);
-
-                $logger->info('✅ Backend notified. Status: ' . $response->getStatusCode());
-            } catch (\Exception $e) {
-                $logger->error('❌ Failed to notify backend: ' . $e->getMessage());
-            }
                 // @TODO: Render response on the basis of event response (if propagation was stopped or not)
                 $this->addFlash('success', $this->translator->trans('Success ! Reply added successfully.'));
                 break;
