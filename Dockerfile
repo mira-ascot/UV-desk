@@ -88,6 +88,10 @@ RUN chown -R uvdesk:uvdesk /var/www/uvdesk && \
 
 RUN composer dump-autoload --optimize && \
     php bin/console cache:clear --env=prod --no-debug || true
+# Run Symfony migrations & warm caches automatically
+RUN php bin/console doctrine:migrations:migrate --no-interaction || true
+RUN php bin/console cache:clear --env=prod || true
+RUN php bin/console cache:warmup --env=prod || true
 
 # Entry point for the container
 ENTRYPOINT ["/usr/local/bin/uvdesk-entrypoint.sh"]
