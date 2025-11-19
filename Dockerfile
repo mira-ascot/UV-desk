@@ -32,10 +32,10 @@ RUN if [ -f .env.example ] && [ ! -f .env ]; then cp .env.example .env; fi
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies (this will run Symfony auto-scripts: cache:clear etc.)
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --optimize-autoloader
+# Install PHP dependencies (NO scripts – avoids cache:clear OOM)
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --optimize-autoloader --no-scripts
 
-# Permissions (best-effort, won't fail build if var/ etc. missing)
+# Permissions (best-effort)
 RUN chown -R www-data:www-data /var/www/html || true \
  && find var -type d -exec chmod 775 {} \; 2>/dev/null || true \
  && find var -type f -exec chmod 664 {} \; 2>/dev/null || true
